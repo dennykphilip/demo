@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 8px 0 20px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s;
+            /* Enable vertical scrolling */
+            overflow-y: auto;
+
+
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4f4f4f;
+            padding-bottom: 10px;
+            letter-spacing: 1.5px;
+        }
+
+        .sidebar a {
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 14px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .dropdown-content {
+            display: none;
+            margin-left: 20px;
+        }
+
+        .arrow {
+            margin-left: auto;
+            transition: transform 0.3s;
+        }
+
+        .arrow.up {
+            transform: rotate(180deg);
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            flex-grow: 1;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        /* Header Styling */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #007bff, #0056b3);
+            padding: 15px 25px;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            letter-spacing: 1px;
+        }
+
+        .user-options div {
+            background-color: #4f4f4f;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .user-options div:hover {
+            background-color: #575757;
+        }
+
+        /* Upload Form and Interview Section Styling */
+        .upload-form, #interview-content {
+            display: none;
+            margin-top: 20px;
+            padding: 25px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #357abd;
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <div class="dropdown">
+            <a href="#" onclick="toggleDropdown('interviewDropdown')">Interview  <i class="arrow">▼</i></a>
+            <div id="interviewDropdown" class="dropdown-content">
+                <a href="#" onclick="scheduleInterview()">Schedule Interview</a>
+                <a href="#" onclick="showInterviewInstructions()">Start Interview</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Welcome, User</h1>
+            <div class="user-options">
+                <div>Sign Out</div>
+            </div>
+        </div>
+
+        <!-- Interview Instructions Section -->
+        <div id="interview-content">
+            <h1>Interview Preparation Instructions</h1>
+            <ul>
+                <li>This interview is monitored.</li>
+                <li>Present yourself professionally.</li>
+                <li>Be confident and stay calm.</li>
+                <li>Review your resume before the interview.</li>
+            </ul>
+
+            <!-- Button to start the interview -->
+            <button onclick="startInterview()">Start Interview</button>
+
+            <!-- Modal Structure -->
+            <div id="interviewModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2>Interview Results</h2>
+                    <div id="resultsContainer"></div>
+                </div>
+            </div>
+
+            <!-- Interview Results Section -->
+            <div id="interview-results" style="display:none;">
+                <h1>Interview Results</h1>
+                <div id="results-content"></div> <!-- Container for question and answer pairs -->
+            </div>
+
+            <!-- Upload Form Section -->
+            <div class="upload-section">
+                <form id="uploadForm" class="upload-form" action="/upload_file" method="post" enctype="multipart/form-data">
+                    <!-- Your upload form content -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to reset the page by hiding sections
+    function resetPage() {
+        document.getElementById('interview-content').style.display = 'none';
+        document.getElementById('uploadForm').style.display = 'none';
+        document.getElementById('interview-results').style.display = 'none'; // Hide results section
+    }
+
+    // Function to show the interview instructions section
+    function showInterviewInstructions() {
+        resetPage();  // Hide other content
+        document.getElementById('interview-content').style.display = 'block';
+    }
+
+    function startInterview() {
+        resetPage(); // Hide other content
+        fetch('/start_interview', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.status);
+                alert(data.status); // Optional: alert can be removed if not needed
+                displayResults(data.results);
+                showModal(data.results); // Show modal with results
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function showModal(results) {
+        const modal = document.getElementById('interviewModal');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        resultsContainer.innerHTML = ''; // Clear previous results
+        resultsContainer.innerHTML = results; // Assuming results is a string or HTML
+
+        modal.style.display = 'block'; // Show the modal
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('interviewModal');
+        modal.style.display = 'none'; // Hide the modal
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('interviewModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+
+    // Function to display the interview results
+    function displayResults(results) {
+        const resultsDiv = document.getElementById('results-content');
+        resultsDiv.innerHTML = ''; // Clear previous results
+
+        results.forEach(result => {
+            const question = document.createElement('h3');
+            question.textContent = result.question;
+
+            const answer = document.createElement('p');
+            answer.textContent = result.answer;
+
+            resultsDiv.appendChild(question);
+            resultsDiv.appendChild(answer);
+        });
+
+        // Show the results section
+        document.getElementById('interview-results').style.display = 'block';
+    }
+
+    // Function to toggle dropdowns
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+</body>
+</html>
